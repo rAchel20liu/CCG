@@ -16,6 +16,7 @@ struct Dish: Identifiable {
 // MARK: - 单个大椭圆按钮
 struct ChapterRow: View {
     let dish: Dish
+    // 移除 @EnvironmentObject，因为 ChapterRow 不需要 badgeVM
 
     var body: some View {
         ZStack {
@@ -51,10 +52,10 @@ struct ChapterRow: View {
 
 // MARK: - Chapter View
 struct ChapterView: View {
-
     let cityName: String
     let dishes: [Dish]
-
+    
+    @EnvironmentObject var badgeVM: BadgeViewModel  // 移到这里
     @State private var searchText = ""
 
     private var filteredDishes: [Dish] {
@@ -95,6 +96,7 @@ struct ChapterView: View {
                         NavigationLink {
                             if let dishInfo = dishInfoForDish(dish) {
                                 DishDetailView(dish: dishInfo)
+                                    .environmentObject(badgeVM)  // 这里可以用了
                             }
                         }
                         label: {
@@ -109,7 +111,6 @@ struct ChapterView: View {
         }
         .background(Color.white)
         .ignoresSafeArea(edges: .top)
-
     }
 }
 
@@ -120,6 +121,7 @@ struct ChapterView: View {
             cityName: "Beijing",
             dishes: ChapterData.beijing
         )
+        .environmentObject(BadgeViewModel())  // 预览也需要提供
     }
 }
 

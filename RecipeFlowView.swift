@@ -10,19 +10,22 @@ import SwiftUI
 struct RecipeFlowView: View {
     let dish: DishInfo
     @Environment(\.dismiss) private var dismiss
-
+    @EnvironmentObject var badgeVM: BadgeViewModel
     @State private var currentStep = 0
     @State private var showFinish = false   // 🔹 新增：是否显示完成页
 
     var body: some View {
         ZStack {
             if showFinish {
-                // ✅ Finish 页：纯白
-                FinishView{
-                    dismiss()
-                }
+                FinishView(
+                    onSkip: {
+                        dismiss()
+                    },
+                    dishName: dish.dishname  // 传递 dishname
+                )
+                .environmentObject(badgeVM)  // 添加这一行
                 .background(Color.white.ignoresSafeArea())
-            } else {
+            }else {
                 // ✅ Step 页：紫色背景
                 Color(red: 0.34, green: 0.24, blue: 0.51)
                     .ignoresSafeArea()
