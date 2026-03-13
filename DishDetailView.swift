@@ -7,6 +7,7 @@
 import SwiftUI
 
 struct DishDetailView: View {
+    @EnvironmentObject var badgeVM: BadgeViewModel
     let dish: DishInfo
     @State private var peopleCount = 1
     @State private var showRecipe = false   // 控制导航到 RecipeFlowView
@@ -87,6 +88,7 @@ struct DishDetailView: View {
             // 🔹 NavigationDestination 跳转 RecipeFlowView
             .navigationDestination(isPresented: $showRecipe) {
                 RecipeFlowView(dish: dish)
+                    .environmentObject(badgeVM)
             }
 
         }
