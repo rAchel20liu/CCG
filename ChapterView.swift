@@ -16,8 +16,9 @@ struct Dish: Identifiable {
 // MARK: - 单个大椭圆按钮
 struct ChapterRow: View {
     let dish: Dish
-    // 移除 @EnvironmentObject，因为 ChapterRow 不需要 badgeVM
-
+    let isCompleted: Bool
+    // 在 ChapterView.swift 顶部添加：
+    
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 999)
@@ -34,6 +35,14 @@ struct ChapterRow: View {
                     Text("\(dish.number)")
                         .font(.custom("Reggae One", size: 28))
                         .foregroundColor(.white)
+                    
+                    if isCompleted {
+                        Image(systemName: "star.fill")
+                            .font(.system(size: 14))
+                            .foregroundColor(.yellow)
+                            .offset(y: 25)  // 向下偏移到圆圈底部
+                            .shadow(color:.black.opacity(0.3), radius: 1, x: 0, y: 1)
+                    }
                 }
 
                 Text(dish.name)
@@ -52,11 +61,12 @@ struct ChapterRow: View {
 
 // MARK: - Chapter View
 struct ChapterView: View {
+
     let cityName: String
     let dishes: [Dish]
-    
-    @EnvironmentObject var badgeVM: BadgeViewModel  // 移到这里
+
     @State private var searchText = ""
+    @EnvironmentObject var progressVM: ProgressViewModel
 
     private var filteredDishes: [Dish] {
         searchText.isEmpty
@@ -96,11 +106,12 @@ struct ChapterView: View {
                         NavigationLink {
                             if let dishInfo = dishInfoForDish(dish) {
                                 DishDetailView(dish: dishInfo)
-                                    .environmentObject(badgeVM)  // 这里可以用了
+                                    
+                                .environmentObject(progressVM)
                             }
                         }
                         label: {
-                            ChapterRow(dish: dish)
+                            ChapterRow(dish: dish,isCompleted: progressVM.badgeLevel(for: dish.name) != .none)
                         }
                         .buttonStyle(.plain)
                     }
@@ -111,6 +122,7 @@ struct ChapterView: View {
         }
         .background(Color.white)
         .ignoresSafeArea(edges: .top)
+
     }
 }
 
@@ -121,7 +133,7 @@ struct ChapterView: View {
             cityName: "Beijing",
             dishes: ChapterData.beijing
         )
-        .environmentObject(BadgeViewModel())  // 预览也需要提供
+        .environmentObject(ProgressViewModel())
     }
 }
 

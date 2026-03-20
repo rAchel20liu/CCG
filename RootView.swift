@@ -11,12 +11,14 @@ import FirebaseAuth
 struct RootView: View {
     @StateObject private var authVM = AuthViewModel()
     @StateObject private var badgeVM = BadgeViewModel()
-
+    @StateObject private var progressVM = ProgressViewModel()
+    
     var body: some View {
         if authVM.isLoggedIn {
             HomeView()
                 .environmentObject(authVM)
                 .environmentObject(badgeVM)
+                .environmentObject(progressVM)
         } else {
             ContentView()
                 .environmentObject(authVM)

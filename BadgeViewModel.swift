@@ -1,22 +1,14 @@
 //
 //  BadgeViewModel.swift
-//  CCG
-//
-//  Created by H2026215 on 2026/2/27.
-//
-
-
-//
-//  BadgeViewModel.swift
 //  UserLoginPage
 //
 //  Created by H2026215 on 2026/2/27.
 //
 
 import Foundation
-import Combine  // 需要导入 Combine
+import Combine
 
-class BadgeViewModel: ObservableObject {  // 确保这一行正确
+class BadgeViewModel: ObservableObject {
     @Published var dishBadges: [DishBadge] = []
     
     private let savedDataKey = "savedBadges"
@@ -97,8 +89,8 @@ class BadgeViewModel: ObservableObject {  // 确保这一行正确
     func incrementCompletion(for dishName: String) {
         if let index = dishBadges.firstIndex(where: { $0.dishName == dishName }) {
             dishBadges[index].addCompletion()
-            saveBadges()  // 保存更改
         }
+        saveBadges()
     }
     
     func badgeLevel(for dishName: String) -> BadgeLevel {

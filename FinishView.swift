@@ -4,22 +4,16 @@
 //
 //  Created by H2026215 on 2026/1/30.
 //
-//
-//  RecipeCompleteView.swift
-//  CCG
-//
-//  Created by H2026215 on 2026/1/30.
-//
 import SwiftUI
 
 struct FinishView: View {
-    let onSkip: () -> Void
-    let dishName: String  // 新增：接收菜品名称
-    @EnvironmentObject var badgeVM: BadgeViewModel  // 新增：接收 badgeVM
-    
+    let onSkip: () -> Void  // 🔹 新增：外部传入跳出flow的闭包
+    let dishName: String  // 新增
+    @EnvironmentObject var progressVM: ProgressViewModel // 新增
+        
     var body: some View {
         ZStack {
-            Color.white.ignoresSafeArea()
+            Color.white.ignoresSafeArea()  // 🔹 背景白色
 
             VStack(spacing: 40) {
                 Spacer()
@@ -49,7 +43,7 @@ struct FinishView: View {
                 }
 
                 Button(action: {
-                    onSkip()
+                    onSkip()   // 🔹 点击 Skip 调用闭包退出 RecipeFlowView
                 }) {
                     Text("Skip")
                         .font(.system(size: 20, weight: .bold))
@@ -66,12 +60,17 @@ struct FinishView: View {
         }
         .onAppear {
             // 完成时增加计数
-            badgeVM.incrementCompletion(for: dishName)
+            progressVM.incrementCompletion(for: dishName)
         }
     }
 }
 
 #Preview {
-    FinishView(onSkip: {}, dishName: "Beijing Zhajiang Mian")
-        .environmentObject(BadgeViewModel())
+    FinishView(
+        onSkip: {
+            print("Skip pressed, should dismiss RecipeFlowView")
+        },
+        dishName: "Beijing Zhajiang Mian"  // 添加这一行
+    )
+    .environmentObject(ProgressViewModel())
 }

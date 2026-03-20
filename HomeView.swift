@@ -14,9 +14,10 @@
 import SwiftUI
 
 struct HomeView: View {
-    @EnvironmentObject var badgeVM: BadgeViewModel
     @State private var searchText = ""
     @State private var selectedTab = 0  // 新增：0=Home, 1=Showcase, 2=Profile
+    // 在 HomeView.swift 顶部添加：
+    @EnvironmentObject var progressVM: ProgressViewModel
     
     var body: some View {
         NavigationStack {
@@ -89,10 +90,7 @@ struct HomeView: View {
     private func regionCard(title: String, imageName: String, dishes: [Dish]) -> some View {
         NavigationLink {
             ChapterView(cityName: title, dishes: dishes)
-<<<<<<< HEAD
-=======
-                .environmentObject(badgeVM)
->>>>>>> badgewall
+                .environmentObject(progressVM)
         } label: {
             HStack {
                 Text(title)
@@ -122,4 +120,6 @@ struct HomeView: View {
 
 #Preview {
     HomeView()
+        .environmentObject(AuthViewModel())
+        .environmentObject(ProgressViewModel())
 }

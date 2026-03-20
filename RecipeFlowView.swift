@@ -9,8 +9,9 @@ import SwiftUI
 
 struct RecipeFlowView: View {
     let dish: DishInfo
+    let onFinish: () -> Void
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject var badgeVM: BadgeViewModel
+    @EnvironmentObject var progressVM: ProgressViewModel
     @State private var currentStep = 0
     @State private var showFinish = false   // 🔹 新增：是否显示完成页
 
@@ -20,12 +21,13 @@ struct RecipeFlowView: View {
                 FinishView(
                     onSkip: {
                         dismiss()
+                        onFinish()
                     },
-                    dishName: dish.dishname  // 传递 dishname
+                    dishName: dish.dishname
                 )
-                .environmentObject(badgeVM)  // 添加这一行
+                .environmentObject(progressVM)  // 添加这行
                 .background(Color.white.ignoresSafeArea())
-            }else {
+            } else {
                 // ✅ Step 页：紫色背景
                 Color(red: 0.34, green: 0.24, blue: 0.51)
                     .ignoresSafeArea()
@@ -107,6 +109,12 @@ struct RecipeFlowView: View {
 
 #Preview {
     NavigationStack {
-        RecipeFlowView(dish: DishData.zhajiangMian)
+        RecipeFlowView(
+            dish: DishData.zhajiangMian,
+            onFinish: {
+                print("Finished, returning to ChapterView")
+            }
+        )
+        .environmentObject(ProgressViewModel())
     }
 }

@@ -1,10 +1,9 @@
 //
 //  BadgeModel.swift
-//  CCG
+//  UserLoginPage
 //
 //  Created by H2026215 on 2026/2/27.
 //
-
 
 import Foundation
 

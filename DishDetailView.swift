@@ -7,10 +7,12 @@
 import SwiftUI
 
 struct DishDetailView: View {
-    @EnvironmentObject var badgeVM: BadgeViewModel
     let dish: DishInfo
     @State private var peopleCount = 1
-    @State private var showRecipe = false   // 控制导航到 RecipeFlowView
+    @State private var showRecipe = false   // 控制导航到
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var progressVM: ProgressViewModel
+
 
     var body: some View {
         VStack {
@@ -87,10 +89,14 @@ struct DishDetailView: View {
 
             // 🔹 NavigationDestination 跳转 RecipeFlowView
             .navigationDestination(isPresented: $showRecipe) {
-                RecipeFlowView(dish: dish)
-                    .environmentObject(badgeVM)
-            }
-
+                            RecipeFlowView(
+                                dish: dish,
+                                onFinish: {
+                                    dismiss()  // 完成时关闭 DishDetailView，返回 ChapterView
+                                }
+                            )
+                            .environmentObject(progressVM)
+                        }
         }
         .toolbar {
             ToolbarItem(placement: .principal) {
@@ -108,5 +114,6 @@ struct DishDetailView: View {
 #Preview {
     NavigationStack {
         DishDetailView(dish: DishData.zhajiangMian)
+            .environmentObject(ProgressViewModel())
     }
 }
