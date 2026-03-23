@@ -66,7 +66,7 @@ struct RecipeFlowView: View {
 
                         Spacer()
                     }
-                    .padding(.top, safeAreaTop() + 8)
+                    .padding(.top, 20)
                     .padding(.horizontal, 16)
 
                     Spacer()
@@ -84,7 +84,7 @@ struct RecipeFlowView: View {
                             dismiss()
                         }
                     )
-
+                    .id(currentStep)
                     Spacer()
                 }
             }

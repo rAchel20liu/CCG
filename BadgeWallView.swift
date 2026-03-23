@@ -30,12 +30,6 @@ struct BadgeWallView: View {
     
     var body: some View {
         VStack {
-            Text("Badge Wall")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .foregroundColor(Color(red: 0.34, green: 0.24, blue: 0.51))
-                .padding(.top, 20)
-            
             if progressVM.earnedBadges.isEmpty {
                 Spacer()
                 VStack(spacing: 20) {

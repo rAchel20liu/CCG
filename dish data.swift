@@ -27,6 +27,7 @@ struct RecipeStep: Identifiable {
     let stepNumber: Int
     let title: String
     let description: String
+    let timerDuration: Int?
 }
 
 
@@ -45,18 +46,18 @@ struct DishData {
             Ingredient(name: "Bean Sprouts", unit: "g", amountPerPerson: 40),
         ],
         recipesteps: [
-            RecipeStep(stepNumber: 1, title: "Prepare Ingredients", description: "Cut pork belly into 0.5cm cubes." ),
-            RecipeStep(stepNumber: 1, title: "Prepare Ingredients", description: "Wash and shred cucumber and carrotrinse bean sprouts." ),
-            RecipeStep(stepNumber: 1, title: "Prepare Ingredients", description: "Mince ginger and garlic."),
-            RecipeStep(stepNumber: 1, title: "Prepare Ingredients", description: "Divide chopped scallions into two portions (one for frying the sauce, one for garnish)." ),
-            RecipeStep(stepNumber: 2, title: "Fry the Zhajiang Sauce", description: "Pour the remaining cooking oil into the pan; when the oil is hot, add minced ginger and half the chopped scallions, stir-fry until fragrant; add pork belly cubes and stir-fry until the meat turns white and releases oil." ),
-            RecipeStep(stepNumber: 2, title: "Fry the Zhajiang Sauce", description: "Add cooking wine to remove the porky smell, stir-fry for another 1 minute." ),
-            RecipeStep(stepNumber: 2, title: "Fry the Zhajiang Sauce", description: "Add yellow soybean paste and sweet bean paste, stir well; add white sugar for seasoning." ),
-            RecipeStep(stepNumber: 2, title: "Fry the Zhajiang Sauce", description: "Pour in a little water (just 1/3 of the sauce’s height); bring to a boil over high heat, then turn to low heat and simmer for 20 minute." ),
-            RecipeStep(stepNumber: 3, title: "Prepare Side Dishes", description: "Bring water to a boil in a pot and add bean sprouts and blanch for roughly 1 minute." ),
-            RecipeStep(stepNumber: 3, title: "Prepare Side Dishes", description: "Rinse all shredded side dishes with cold water, then drain; arrange them on plates." ),
-            RecipeStep(stepNumber: 4, title: "Boil Noodles", description: "Add enough water to a pot; bring to a boil over high heat, then add handmade noodles; Boil noodles for 8-10 minutes until the noodles are soft without hard core." ),
-            RecipeStep(stepNumber: 5, title: "Serve", description: "Place the boiled noodles at the bottom of a bowl, pour enough zhajiang sauce over them, add side dishes like shredded cucumber, carrot, bean sprouts, and egg skin, stir well and enjoy." ),
+            RecipeStep(stepNumber: 1, title: "Prepare Ingredients", description: "Cut pork belly into 0.5cm cubes.", timerDuration: nil ),
+            RecipeStep(stepNumber: 1, title: "Prepare Ingredients", description: "Wash and shred cucumber and carrotrinse bean sprouts.", timerDuration: nil ),
+            RecipeStep(stepNumber: 1, title: "Prepare Ingredients", description: "Mince ginger and garlic.", timerDuration: nil),
+            RecipeStep(stepNumber: 1, title: "Prepare Ingredients", description: "Divide chopped scallions into two portions (one for frying the sauce, one for garnish).", timerDuration: nil ),
+            RecipeStep(stepNumber: 2, title: "Fry the Zhajiang Sauce", description: "Pour the remaining cooking oil into the pan; when the oil is hot, add minced ginger and half the chopped scallions, stir-fry until fragrant; add pork belly cubes and stir-fry until the meat turns white and releases oil.", timerDuration: 120 ),
+            RecipeStep(stepNumber: 2, title: "Fry the Zhajiang Sauce", description: "Add cooking wine to remove the porky smell, stir-fry for another 1 minute." , timerDuration: 60),
+            RecipeStep(stepNumber: 2, title: "Fry the Zhajiang Sauce", description: "Add yellow soybean paste and sweet bean paste, stir well; add white sugar for seasoning." , timerDuration: nil),
+            RecipeStep(stepNumber: 2, title: "Fry the Zhajiang Sauce", description: "Pour in a little water (just 1/3 of the sauce’s height); bring to a boil over high heat, then turn to low heat and simmer for 20 minute.", timerDuration: 1200 ),
+            RecipeStep(stepNumber: 3, title: "Prepare Side Dishes", description: "Bring water to a boil in a pot and add bean sprouts and blanch for roughly 1 minute.", timerDuration: 60 ),
+            RecipeStep(stepNumber: 3, title: "Prepare Side Dishes", description: "Rinse all shredded side dishes with cold water, then drain; arrange them on plates.", timerDuration: nil ),
+            RecipeStep(stepNumber: 4, title: "Boil Noodles", description: "Add enough water to a pot; bring to a boil over high heat, then add handmade noodles; Boil noodles for 8-10 minutes until the noodles are soft without hard core.", timerDuration: 600 ),
+            RecipeStep(stepNumber: 5, title: "Serve", description: "Place the boiled noodles at the bottom of a bowl, pour enough zhajiang sauce over them, add side dishes like shredded cucumber, carrot, bean sprouts, and egg skin, stir well and enjoy.", timerDuration: nil ),
         ]
         
     )
@@ -76,17 +77,17 @@ struct DishData {
             Ingredient(name: "Soy Sauce", unit: "ml", amountPerPerson: 8),
         ],
         recipesteps: [
-            RecipeStep(stepNumber: 1, title: "Prepare the Duck", description: "Clean the whole duck, remove excess fat, and rinse thoroughly; pat dry with kitchen paper." ),
-            RecipeStep(stepNumber: 1, title: "Prepare the Duck", description: "Mix honey, vinegar, soy sauce and water to make a glaze; brush evenly over the duck skin." ),
-            RecipeStep(stepNumber: 1, title: "Prepare the Duck", description: "Hang the duck in a well-ventilated area for 4-6 hours until the skin is completely dry (key for crispiness)." ),
-            RecipeStep(stepNumber: 2, title: "Roast the Duck", description: "Preheat the oven to 200°C (392°F); place the duck on a roasting rack with a tray underneath to catch drippings." ),
-            RecipeStep(stepNumber: 2, title: "Roast the Duck", description: "Roast for 30 minutes at 200°C, then lower the temperature to 180°C (356°F) and roast for another 40-50 minutes until the skin is golden and crispy." ),
-            RecipeStep(stepNumber: 2, title: "Roast the Duck", description: "For extra crispy skin, turn the oven to broil (grill) mode for the last 5 minutes (watch carefully to avoid burning)." ),
-            RecipeStep(stepNumber: 3, title: "Prepare Accompaniments", description: "Cut cucumber into thin strips and scallions into fine shreds; place in small dishes." ),
-            RecipeStep(stepNumber: 3, title: "Prepare Accompaniments", description: "Warm the wheat pancakes in a steamer for 2-3 minutes to make them soft and pliable." ),
-            RecipeStep(stepNumber: 3, title: "Prepare Accompaniments", description: "Pour sweet bean sauce into a small bowl for serving." ),
-            RecipeStep(stepNumber: 4, title: "Carve and Serve", description: "Carve the roasted duck tableside: first slice the crispy skin into thin pieces, then slice the tender meat." ),
-            RecipeStep(stepNumber: 4, title: "Carve and Serve", description: "To eat: spread sweet bean sauce on a pancake, add duck skin/meat, cucumber strips and scallions, roll up and enjoy." ),
+            RecipeStep(stepNumber: 1, title: "Prepare the Duck", description: "Clean the whole duck, remove excess fat, and rinse thoroughly; pat dry with kitchen paper.", timerDuration: nil ),
+            RecipeStep(stepNumber: 1, title: "Prepare the Duck", description: "Mix honey, vinegar, soy sauce and water to make a glaze; brush evenly over the duck skin." , timerDuration: nil),
+            RecipeStep(stepNumber: 1, title: "Prepare the Duck", description: "Hang the duck in a well-ventilated area for 4-6 hours until the skin is completely dry (key for crispiness).", timerDuration: 21600 ),
+            RecipeStep(stepNumber: 2, title: "Roast the Duck", description: "Preheat the oven to 200°C (392°F); place the duck on a roasting rack with a tray underneath to catch drippings." , timerDuration: nil),
+            RecipeStep(stepNumber: 2, title: "Roast the Duck", description: "Roast for 30 minutes at 200°C, then lower the temperature to 180°C (356°F) and roast for another 40-50 minutes until the skin is golden and crispy." , timerDuration: 4800),
+            RecipeStep(stepNumber: 2, title: "Roast the Duck", description: "For extra crispy skin, turn the oven to broil (grill) mode for the last 5 minutes (watch carefully to avoid burning).", timerDuration: 360 ),
+            RecipeStep(stepNumber: 3, title: "Prepare Accompaniments", description: "Cut cucumber into thin strips and scallions into fine shreds; place in small dishes.", timerDuration: nil ),
+            RecipeStep(stepNumber: 3, title: "Prepare Accompaniments", description: "Warm the wheat pancakes in a steamer for 2-3 minutes to make them soft and pliable.", timerDuration: 180 ),
+            RecipeStep(stepNumber: 3, title: "Prepare Accompaniments", description: "Pour sweet bean sauce into a small bowl for serving.", timerDuration: nil ),
+            RecipeStep(stepNumber: 4, title: "Carve and Serve", description: "Carve the roasted duck tableside: first slice the crispy skin into thin pieces, then slice the tender meat." , timerDuration: nil),
+            RecipeStep(stepNumber: 4, title: "Carve and Serve", description: "To eat: spread sweet bean sauce on a pancake, add duck skin/meat, cucumber strips and scallions, roll up and enjoy." , timerDuration: nil),
         ]
     )
 
@@ -108,17 +109,17 @@ struct DishData {
             Ingredient(name: "Salt", unit: "g", amountPerPerson: 1),
         ],
         recipesteps: [
-            RecipeStep(stepNumber: 1, title: "Marinate the Pork", description: "Place shredded pork tenderloin in a bowl; add 5ml cooking wine, light soy sauce (5ml), cornstarch and a pinch of salt." ),
-            RecipeStep(stepNumber: 1, title: "Marinate the Pork", description: "Mix well and let marinate for 10 minutes to tenderize the meat." ),
-            RecipeStep(stepNumber: 2, title: "Prepare Ingredients", description: "Cut scallions into 3cm long sections (separate white and green parts); slice ginger and garlic thinly." ),
-            RecipeStep(stepNumber: 2, title: "Prepare Ingredients", description: "Mix remaining light soy sauce, dark soy sauce, cooking wine, sugar and a little water to make a sauce." ),
-            RecipeStep(stepNumber: 3, title: "Stir-Fry the Dish", description: "Heat a wok or pan over high heat; add cooking oil until smoking hot." ),
-            RecipeStep(stepNumber: 3, title: "Stir-Fry the Dish", description: "Add marinated pork shreds and stir-fry quickly for 1-2 minutes until the meat changes color (do not overcook)." ),
-            RecipeStep(stepNumber: 3, title: "Stir-Fry the Dish", description: "Remove the pork from the pan and set aside (keep the oil in the pan)." ),
-            RecipeStep(stepNumber: 3, title: "Stir-Fry the Dish", description: "In the same pan, add ginger and garlic, stir-fry for 10 seconds until fragrant; add the white parts of scallions and stir-fry for 30 seconds." ),
-            RecipeStep(stepNumber: 3, title: "Stir-Fry the Dish", description: "Return the pork to the pan; pour in the prepared sauce and stir well for 30 seconds." ),
-            RecipeStep(stepNumber: 3, title: "Stir-Fry the Dish", description: "Add the green parts of scallions, stir-fry for 10 more seconds to combine all flavors." ),
-            RecipeStep(stepNumber: 4, title: "Serve", description: "Transfer to a plate immediately and serve hot with steamed rice or noodles." ),
+            RecipeStep(stepNumber: 1, title: "Marinate the Pork", description: "Place shredded pork tenderloin in a bowl; add 5ml cooking wine, light soy sauce (5ml), cornstarch and a pinch of salt.", timerDuration: nil ),
+            RecipeStep(stepNumber: 1, title: "Marinate the Pork", description: "Mix well and let marinate for 10 minutes to tenderize the meat.", timerDuration: 600 ),
+            RecipeStep(stepNumber: 2, title: "Prepare Ingredients", description: "Cut scallions into 3cm long sections (separate white and green parts); slice ginger and garlic thinly." , timerDuration: nil),
+            RecipeStep(stepNumber: 2, title: "Prepare Ingredients", description: "Mix remaining light soy sauce, dark soy sauce, cooking wine, sugar and a little water to make a sauce.", timerDuration: nil ),
+            RecipeStep(stepNumber: 3, title: "Stir-Fry the Dish", description: "Heat a wok or pan over high heat; add cooking oil until smoking hot." , timerDuration: nil),
+            RecipeStep(stepNumber: 3, title: "Stir-Fry the Dish", description: "Add marinated pork shreds and stir-fry quickly for 1-2 minutes until the meat changes color (do not overcook).", timerDuration: 120 ),
+            RecipeStep(stepNumber: 3, title: "Stir-Fry the Dish", description: "Remove the pork from the pan and set aside (keep the oil in the pan).", timerDuration: nil ),
+            RecipeStep(stepNumber: 3, title: "Stir-Fry the Dish", description: "In the same pan, add ginger and garlic, stir-fry for 10 seconds until fragrant; add the white parts of scallions and stir-fry for 30 seconds.", timerDuration: 10 ),
+            RecipeStep(stepNumber: 3, title: "Stir-Fry the Dish", description: "Return the pork to the pan; pour in the prepared sauce and stir well for 30 seconds.", timerDuration: 30 ),
+            RecipeStep(stepNumber: 3, title: "Stir-Fry the Dish", description: "Add the green parts of scallions, stir-fry for 10 more seconds to combine all flavors." , timerDuration: 15),
+            RecipeStep(stepNumber: 4, title: "Serve", description: "Transfer to a plate immediately and serve hot with steamed rice or noodles." , timerDuration: nil),
         ]
     )
 }
