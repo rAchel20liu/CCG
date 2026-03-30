@@ -14,10 +14,10 @@
 import SwiftUI
 
 struct HomeView: View {
-    @State private var searchText = ""
-    @State private var selectedTab = 0  // 新增：0=Home, 1=Showcase, 2=Profile
-    // 在 HomeView.swift 顶部添加：
+    @EnvironmentObject var authVM: AuthViewModel
     @EnvironmentObject var progressVM: ProgressViewModel
+    @State private var searchText = ""
+    @State private var selectedTab = 0
     
     var body: some View {
         NavigationStack {
@@ -80,9 +80,13 @@ struct HomeView: View {
 
             Spacer()
 
-            Circle()
-                .fill(Color.gray.opacity(0.2))
-                .frame(width: 45, height: 45)
+            NavigationLink {
+                SettingsView()
+                    .environmentObject(authVM)
+            } label: {
+                Image(systemName: "gearshape.fill")
+                    .foregroundColor(Color(red: 0.34, green: 0.24, blue: 0.51))
+            }
         }
         .padding(.horizontal, 24)
     }
