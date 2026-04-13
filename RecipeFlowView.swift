@@ -11,6 +11,7 @@ struct RecipeFlowView: View {
     let dish: DishInfo
     let onFinish: () -> Void
     @Environment(\.dismiss) private var dismiss
+    @StateObject private var photoVM = PhotoViewModel()
     @EnvironmentObject var progressVM: ProgressViewModel
     @State private var currentStep = 0
     @State private var showFinish = false   // 🔹 新增：是否显示完成页
@@ -25,7 +26,8 @@ struct RecipeFlowView: View {
                     },
                     dishName: dish.dishname
                 )
-                .environmentObject(progressVM)  // 添加这行
+                .environmentObject(progressVM)
+                .environmentObject(photoVM) 
                 .background(Color.white.ignoresSafeArea())
             } else {
                 // ✅ Step 页：紫色背景

@@ -5,7 +5,6 @@
 //  Created by H2026215 on 2026/3/20.
 //
 
-
 import Foundation
 import Combine
 import FirebaseFirestore
@@ -17,21 +16,54 @@ class ProgressViewModel: ObservableObject {
     
     private var db = Firestore.firestore()
     private var listener: ListenerRegistration?
-    private let localCacheKey = "cachedUserProgress"
+    private let localCacheKey = "cachedUserProgress_"
     
-    var userId: String? { Auth.auth().currentUser?.uid }
+    // 不同账号用不同的缓存 key
+    private var cacheKey: String {
+        let userId = Auth.auth().currentUser?.uid ?? "anonymous"
+        return localCacheKey + userId
+    }
+    
+    private var userId: String? { Auth.auth().currentUser?.uid }
+    
+    // 监听 Auth 状态变化
+    private var authStateListener: AuthStateDidChangeListenerHandle?
     
     init() {
+        setupAuthListener()
         loadProgress()
+    }
+    
+    // 监听登录状态变化
+    private func setupAuthListener() {
+        authStateListener = Auth.auth().addStateDidChangeListener { [weak self] _, user in
+            guard let self = self else { return }
+            
+            // 用户切换时，重新加载数据
+            DispatchQueue.main.async {
+                self.clearLocalCache()
+                self.loadProgress()
+            }
+        }
+    }
+    
+    // 清除当前账号的缓存
+    private func clearLocalCache() {
+        UserDefaults.standard.removeObject(forKey: cacheKey)
+        userProgress = nil
     }
     
     func loadProgress() {
         guard let userId = userId else {
-            loadFromCache()
+            // 未登录，清除数据
+            userProgress = nil
             return
         }
         
         isLoading = true
+        
+        // 移除旧的监听器
+        listener?.remove()
         
         listener = db.collection("userProgress").document(userId)
             .addSnapshotListener { [weak self] document, error in
@@ -71,7 +103,11 @@ class ProgressViewModel: ObservableObject {
             progress.dishCompletions[dishName] = 0
         }
         
-        db.collection("userProgress").document(userId).setData(progress.toDictionary())
+        db.collection("userProgress").document(userId).setData(progress.toDictionary()) { error in
+            if let error = error {
+                print("Error creating progress: \(error)")
+            }
+        }
         
         DispatchQueue.main.async {
             self.userProgress = progress
@@ -80,14 +116,16 @@ class ProgressViewModel: ObservableObject {
     }
     
     private func loadFromCache() {
-        guard let data = UserDefaults.standard.data(forKey: localCacheKey) else {
+        guard let userId = userId else { return }
+        
+        guard let data = UserDefaults.standard.data(forKey: cacheKey) else {
             createDefaultProgress()
             return
         }
         
         do {
             let dishCompletions = try JSONDecoder().decode([String: Int].self, from: data)
-            var progress = UserProgress(userId: userId ?? "local")
+            var progress = UserProgress(userId: userId)
             progress.dishCompletions = dishCompletions
             self.userProgress = progress
         } catch {
@@ -98,14 +136,15 @@ class ProgressViewModel: ObservableObject {
     private func saveToCache(_ progress: UserProgress) {
         do {
             let data = try JSONEncoder().encode(progress.dishCompletions)
-            UserDefaults.standard.set(data, forKey: localCacheKey)
+            UserDefaults.standard.set(data, forKey: cacheKey)
         } catch {
             print("Failed to save to cache: \(error)")
         }
     }
     
     private func createDefaultProgress() {
-        var progress = UserProgress(userId: userId ?? "local")
+        guard let userId = userId else { return }
+        var progress = UserProgress(userId: userId)
         for dishName in getAllDishNames() {
             progress.dishCompletions[dishName] = 0
         }
@@ -150,5 +189,8 @@ class ProgressViewModel: ObservableObject {
     
     deinit {
         listener?.remove()
+        if let handle = authStateListener {
+            Auth.auth().removeStateDidChangeListener(handle)
+        }
     }
 }

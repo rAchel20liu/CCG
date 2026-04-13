@@ -12,6 +12,7 @@ struct RootView: View {
     @StateObject private var authVM = AuthViewModel()
     @StateObject private var badgeVM = BadgeViewModel()
     @StateObject private var progressVM = ProgressViewModel()
+    @StateObject private var photoVM = PhotoViewModel()
     
     var body: some View {
         if authVM.isLoggedIn {
@@ -19,6 +20,8 @@ struct RootView: View {
                 .environmentObject(authVM)
                 .environmentObject(badgeVM)
                 .environmentObject(progressVM)
+                .environmentObject(photoVM)
+            
         } else {
             ContentView()
                 .environmentObject(authVM)
