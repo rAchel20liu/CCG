@@ -4,6 +4,12 @@
 //
 //  Created by H2026215 on 2026/1/16.
 //
+//
+//  Chapter.swift
+//  CCG
+//
+//  Created by H2026215 on 2026/1/16.
+//
 import SwiftUI
 
 // MARK: - Model
@@ -17,7 +23,6 @@ struct Dish: Identifiable {
 struct ChapterRow: View {
     let dish: Dish
     let isCompleted: Bool
-    // 在 ChapterView.swift 顶部添加：
     
     var body: some View {
         ZStack {
@@ -26,7 +31,6 @@ struct ChapterRow: View {
                 .frame(height: 55)
 
             HStack(spacing: 20) {
-
                 ZStack {
                     Circle()
                         .fill(Color(red: 0.34, green: 0.24, blue: 0.51))
@@ -40,8 +44,8 @@ struct ChapterRow: View {
                         Image(systemName: "star.fill")
                             .font(.system(size: 14))
                             .foregroundColor(.yellow)
-                            .offset(y: 25)  // 向下偏移到圆圈底部
-                            .shadow(color:.black.opacity(0.3), radius: 1, x: 0, y: 1)
+                            .offset(y: 25)
+                            .shadow(color: .black.opacity(0.3), radius: 1, x: 0, y: 1)
                     }
                 }
 
@@ -61,59 +65,95 @@ struct ChapterRow: View {
 
 // MARK: - Chapter View
 struct ChapterView: View {
-
     let cityName: String
     let dishes: [Dish]
-
-    @State private var searchText = ""
+    
     @EnvironmentObject var progressVM: ProgressViewModel
+    @State private var searchText = ""
+    @Environment(\.dismiss) private var dismiss
 
     private var filteredDishes: [Dish] {
-        searchText.isEmpty
-        ? dishes
-        : dishes.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+        if searchText.isEmpty {
+            return dishes
+        } else {
+            return dishes.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+        }
     }
 
     var body: some View {
         VStack(spacing: 0) {
-
-            // 顶部搜索栏
-            VStack(spacing: 12) {
-                HStack {
-                    Spacer()
-
-                    HStack(spacing: 8) {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.gray)
-
-                        TextField("Search", text: $searchText)
-                            .font(.system(size: 16))
-                    }
-                    .padding(10)
-                    .background(Color.white)
-                    .cornerRadius(100)
+            // 顶部：返回按钮 + 搜索框（同一行，保持原布局）
+            HStack {
+                // 返回按钮
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "chevron.left")
+                        .font(.title3)
+                        .foregroundColor(Color(red: 0.34, green: 0.24, blue: 0.51))
                 }
-                .padding(.horizontal, 100)
-                .padding(.top, 60)
-                .padding(.bottom, 12)
+                
+                Spacer()
+                
+                // 搜索框 - 和 HomeView 完全一样的样式
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.gray)
+                    TextField("Search", text: $searchText)
+                        .font(.system(size: 16))
+                        .autocapitalization(.none)
+                        .disableAutocorrection(true)
+                }
+                .padding(11)
+                .frame(width: 250) 
                 .background(Color.white)
+                .cornerRadius(100)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 100)
+                        .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                )
+                
+                if !searchText.isEmpty {
+                    Button("Cancel") {
+                        searchText = ""
+                    }
+                    .foregroundColor(Color(red: 0.34, green: 0.24, blue: 0.51))
+                }
             }
+            .padding(.horizontal, 16)
+            .padding(.top, 8)
+            .background(Color.white)
 
             // 内容
             ScrollView {
                 VStack(spacing: 28) {
-                    ForEach(filteredDishes) { dish in
-                        NavigationLink {
-                            if let dishInfo = dishInfoForDish(dish) {
-                                DishDetailView(dish: dishInfo)
-                                    
-                                .environmentObject(progressVM)
+                    if filteredDishes.isEmpty && !searchText.isEmpty {
+                        VStack(spacing: 20) {
+                            Spacer().frame(height: 100)
+                            Image(systemName: "magnifyingglass")
+                                .font(.system(size: 50))
+                                .foregroundColor(.gray)
+                            Text("No matching dishes")
+                                .font(.title3)
+                                .foregroundColor(.gray)
+                            Spacer()
+                        }
+                        .frame(maxWidth: .infinity)
+                    } else {
+                        ForEach(filteredDishes) { dish in
+                            NavigationLink {
+                                if let dishInfo = dishInfoForDish(dish) {
+                                    DishDetailView(dish: dishInfo)
+                                        .environmentObject(progressVM)
+                                }
+                            } label: {
+                                ChapterRow(
+                                    dish: dish,
+                                    isCompleted: progressVM.badgeLevel(for: dish.name) != .none
+                                )
                             }
+                            .buttonStyle(.plain)
                         }
-                        label: {
-                            ChapterRow(dish: dish,isCompleted: progressVM.badgeLevel(for: dish.name) != .none)
-                        }
-                        .buttonStyle(.plain)
                     }
                 }
                 .padding(.horizontal, 20)
@@ -121,8 +161,7 @@ struct ChapterView: View {
             }
         }
         .background(Color.white)
-        .ignoresSafeArea(edges: .top)
-
+        .navigationBarHidden(true)
     }
 }
 

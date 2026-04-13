@@ -11,6 +11,7 @@
 //
 //  Created by H2026215 on 2025/11/14.
 //
+
 import SwiftUI
 
 struct HomeView: View {
@@ -19,36 +20,60 @@ struct HomeView: View {
     @State private var searchText = ""
     @State private var selectedTab = 0
     
+    // 地区数据
+    private let regions = [
+        ("Beijing", "beijing", ChapterData.beijing),
+        ("Sichuan", "sichuan", ChapterData.sichuan),
+        ("Jiangsu", "jiangsu", ChapterData.jiangsu),
+        ("Minnan", "minnan", ChapterData.minnan),
+        ("Guangdong", "guangdong", ChapterData.guangdong),
+        ("Anhui", "anhui", ChapterData.anhui)
+    ]
+    
+    // 搜索过滤后的地区
+    private var filteredRegions: [(title: String, imageName: String, dishes: [Dish])] {
+        if searchText.isEmpty {
+            return regions
+        } else {
+            return regions.filter { region in
+                region.0.localizedCaseInsensitiveContains(searchText) ||
+                region.2.contains { $0.name.localizedCaseInsensitiveContains(searchText) }
+            }
+        }
+    }
+    
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
                 
-                // 🔹 根据选中的tab显示不同内容
                 if selectedTab == 0 {
-                    // Home 内容
                     VStack(spacing: 0) {
-                        // 顶部搜索栏
                         topSearchBar
                             .padding(.bottom, 12)
                             .background(Color.white)
                             .zIndex(1)
                         
-                        // Scrollable 内容
                         ScrollView(showsIndicators: false) {
                             VStack(spacing: 30) {
-                                regionCard(title: "Beijing", imageName: "beijing", dishes: ChapterData.beijing)
-                                regionCard(title: "Sichuan", imageName: "sichuan", dishes: ChapterData.sichuan)
-                                regionCard(title: "Jiangsu", imageName: "jiangsu", dishes: ChapterData.jiangsu)
-                                regionCard(title: "Minnan", imageName: "minnan", dishes: ChapterData.minnan)
-                                regionCard(title: "Guangdong", imageName: "guangdong", dishes: ChapterData.guangdong)
-                                regionCard(title: "Anhui", imageName: "anhui", dishes: ChapterData.anhui)
+                                ForEach(filteredRegions, id: \.title) { region in
+                                    NavigationLink {
+                                        ChapterView(cityName: region.title, dishes: region.dishes)
+                                            .environmentObject(progressVM)
+                                    } label: {
+                                        RegionCard(
+                                            title: region.title,
+                                            imageName: region.imageName,
+                                            dishes: region.dishes
+                                        )
+                                    }
+                                    .buttonStyle(.plain)
+                                }
                                 
-                                // 给底部 Tab 留空间
                                 Spacer().frame(height: 70)
                             }
                             .padding(.top)
                             .padding(.bottom, 9)
-                            .background(Color.white) // 保证背景为白色
+                            .background(Color.white)
                         }
                     }
                 } else if selectedTab == 1 {
@@ -57,29 +82,40 @@ struct HomeView: View {
                     ProfileView()
                 }
                 
-                // 🔹 底部固定 Tab - 替换原来的静态tab
                 BottomTabBar(selectedTab: $selectedTab)
             }
-            .background(Color.white) // 背景白色，移除灰色效果
+            .background(Color.white)
             .navigationBarHidden(true)
         }
     }
     
-    // 保持原有的topSearchBar和regionCard不变
     private var topSearchBar: some View {
         HStack {
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.gray)
-                TextField("Search", text: .constant(""))
+                TextField("Search by region or dish...", text: $searchText)
                     .font(.system(size: 16))
+                    .autocapitalization(.none)
+                    .disableAutocorrection(true)
             }
             .padding(11)
             .background(Color.white)
             .cornerRadius(100)
-
+            .overlay(
+                RoundedRectangle(cornerRadius: 100)
+                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+            )
+            
+            if !searchText.isEmpty {
+                Button("Cancel") {
+                    searchText = ""
+                }
+                .foregroundColor(Color(red: 0.34, green: 0.24, blue: 0.51))
+            }
+            
             Spacer()
-
+            
             NavigationLink {
                 SettingsView()
                     .environmentObject(authVM)
@@ -89,36 +125,6 @@ struct HomeView: View {
             }
         }
         .padding(.horizontal, 24)
-    }
-    
-    private func regionCard(title: String, imageName: String, dishes: [Dish]) -> some View {
-        NavigationLink {
-            ChapterView(cityName: title, dishes: dishes)
-                .environmentObject(progressVM)
-        } label: {
-            HStack {
-                Text(title)
-                    .font(.system(size: 26))
-                    .fontWeight(.semibold)
-                    .padding(.leading, 20)
-                Spacer()
-                Image(imageName)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 125, height: 125)
-                    .cornerRadius(8)
-                    .clipped()
-            }
-            .padding(.horizontal, 10)
-            .frame(width: 348, height: 153)
-            .background(Color.white)
-            .cornerRadius(12)
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color(red: 0.34, green: 0.24, blue: 0.51), lineWidth: 3)
-            )
-        }
-        .buttonStyle(.plain)
     }
 }
 
