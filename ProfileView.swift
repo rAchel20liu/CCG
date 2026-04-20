@@ -5,14 +5,6 @@
 //  Created by H2026215 on 2026/3/30.
 //
 
-
-//
-//  ProfileView.swift
-//  CCG
-//
-//  Created by H2026215 on 2026/3/30.
-//
-
 //
 //  ProfileView.swift
 //  CCG
@@ -26,8 +18,13 @@ import FirebaseAuth
 struct ProfileView: View {
     @EnvironmentObject var authVM: AuthViewModel
     @EnvironmentObject var progressVM: ProgressViewModel
+    @StateObject private var profileVM = UserProfileViewModel()
     @State private var selectedTab = 2
-    @State private var showSettings = false
+    @State private var showEditName = false
+    @State private var newUsername = ""
+    @State private var showImagePicker = false
+    @State private var selectedImage: UIImage?
+    @State private var isUploadingAvatar = false
     
     // 计算各种徽章数量
     private var bronzeCount: Int {
@@ -48,20 +45,50 @@ struct ProfileView: View {
             VStack(alignment: .leading, spacing: 16) {
                 // 第一行：头像 + 用户名/邮箱 + 齿轮
                 HStack(alignment: .center, spacing: 16) {
-                    // 大头像
-                    Image(systemName: "person.circle.fill")
-                        .font(.system(size: 60))
-                        .foregroundColor(Color(red: 0.34, green: 0.24, blue: 0.51))
+                    // 大头像（可点击上传）
+                    Button {
+                        showImagePicker = true
+                    } label: {
+                        ZStack {
+                            if let avatarUrl = profileVM.userProfile?.avatarUrl {
+                                CachedAsyncImage(url: URL(string: avatarUrl))
+                                    .frame(width: 60, height: 60)
+                                    .clipShape(Circle())
+                            } else {
+                                Image(systemName: "person.circle.fill")
+                                    .font(.system(size: 60))
+                                    .foregroundColor(Color(red: 0.34, green: 0.24, blue: 0.51))
+                            }
+                            
+                            if isUploadingAvatar {
+                                ProgressView()
+                                    .frame(width: 60, height: 60)
+                                    .background(Color.black.opacity(0.5))
+                                    .clipShape(Circle())
+                            }
+                        }
+                    }
                     
                     // 用户名和邮箱
                     VStack(alignment: .leading, spacing: 4) {
-                        if let user = Auth.auth().currentUser {
-                            // 用户名（可以从 Firebase 获取，暂时用邮箱前缀）
-                            Text(user.email?.components(separatedBy: "@").first ?? "User")
+                        // 可编辑的用户名
+                        HStack(spacing: 8) {
+                            Text(profileVM.userProfile?.username ?? "User")
                                 .font(.title2)
                                 .fontWeight(.bold)
                                 .foregroundColor(.black)
                             
+                            Button {
+                                newUsername = profileVM.userProfile?.username ?? ""
+                                showEditName = true
+                            } label: {
+                                Image(systemName: "pencil.circle.fill")
+                                    .font(.title3)
+                                    .foregroundColor(Color(red: 0.34, green: 0.24, blue: 0.51))
+                            }
+                        }
+                        
+                        if let user = Auth.auth().currentUser {
                             Text(user.email ?? "No Email")
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
@@ -70,7 +97,7 @@ struct ProfileView: View {
                     
                     Spacer()
                     
-                    // 齿轮图标 - 顶右上格
+                    // 齿轮图标
                     NavigationLink {
                         SettingsView()
                             .environmentObject(authVM)
@@ -98,7 +125,7 @@ struct ProfileView: View {
                     Text("Joined")
                         .foregroundColor(.gray)
                     Spacer()
-                    Text("March 2025") // 可以改成真实的注册时间
+                    Text(profileVM.getJoinDateString())
                         .foregroundColor(.black)
                 }
                 .padding(.horizontal, 20)
@@ -115,7 +142,6 @@ struct ProfileView: View {
                         .foregroundColor(Color(red: 0.34, green: 0.24, blue: 0.51))
                     
                     HStack(spacing: 20) {
-                        // 金牌
                         BadgeStatView(
                             icon: "medal.fill",
                             color: Color(red: 1.00, green: 0.84, blue: 0.00),
@@ -123,7 +149,6 @@ struct ProfileView: View {
                             name: "Gold"
                         )
                         
-                        // 银牌
                         BadgeStatView(
                             icon: "medal.fill",
                             color: Color.gray,
@@ -131,15 +156,12 @@ struct ProfileView: View {
                             name: "Silver"
                         )
                         
-                        // 铜牌
                         BadgeStatView(
                             icon: "medal.fill",
                             color: Color(red: 0.80, green: 0.50, blue: 0.20),
                             count: bronzeCount,
                             name: "Bronze"
                         )
-                        
-                        
                     }
                 }
                 .padding(.horizontal, 20)
@@ -147,12 +169,36 @@ struct ProfileView: View {
                 
                 Spacer()
             }
-            
-            // 底部 Tab
-    
         }
         .background(Color.white)
         .navigationBarHidden(true)
+        .alert("Edit Username", isPresented: $showEditName) {
+            TextField("Username", text: $newUsername)
+            Button("Cancel", role: .cancel) {}
+            Button("Save") {
+                profileVM.updateUsername(newUsername)
+            }
+        } message: {
+            Text("Enter your new username")
+        }
+        .alert("Error", isPresented: $profileVM.showError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(profileVM.errorMessage)
+        }
+        .sheet(isPresented: $showImagePicker) {
+            ImagePicker(sourceType: .photoLibrary, selectedImage: $selectedImage)
+        }
+        .onChange(of: selectedImage) { newImage in
+            if let image = newImage {
+                isUploadingAvatar = true
+                profileVM.uploadAvatar(image: image)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    isUploadingAvatar = false
+                    selectedImage = nil
+                }
+            }
+        }
     }
 }
 

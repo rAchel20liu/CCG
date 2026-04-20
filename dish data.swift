@@ -32,9 +32,9 @@ struct RecipeStep: Identifiable {
 
 
 struct DishData {
-    static let zhajiangMian = DishInfo(
-        dishname: "Beijing Zhajiang Mian",
-        description:"Beijing Zhajiang Mian, or noodles with fried bean sauce, is a iconic home-style dish from Beijing. It features chewy handmade noodles tossed with savory, thick soybean paste sauce (mixed with pork cubes) and fresh crunchy side dishes like cucumber or bean sprouts. Simple to make but rich in flavor, it’s a daily favorite for Beijingers and a must-try for anyone wanting to taste authentic Beijing cuisine.",
+    static let beijingsoybeanpastenoodles = DishInfo(
+        dishname: "Beijing Soy Bean Paste Noodles",
+        description:"Beijing Soy Bean Paste Noodles is a iconic home-style dish from Beijing. It features chewy handmade noodles tossed with savory, thick soybean paste sauce (mixed with pork cubes) and fresh crunchy side dishes like cucumber or bean sprouts. Simple to make but rich in flavor, it’s a daily favorite for Beijingers and a must-try for anyone wanting to taste authentic Beijing cuisine.",
          ingredients: [
             Ingredient(name: "Handmade Noodles", unit: "g", amountPerPerson: 100),
             Ingredient(name: "Pork Belly", unit: "g", amountPerPerson: 50),

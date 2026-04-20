@@ -112,7 +112,7 @@ struct RecipeFlowView: View {
 #Preview {
     NavigationStack {
         RecipeFlowView(
-            dish: DishData.zhajiangMian,
+            dish: DishData.beijingsoybeanpastenoodles,
             onFinish: {
                 print("Finished, returning to ChapterView")
             }

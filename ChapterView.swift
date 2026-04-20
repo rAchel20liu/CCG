@@ -10,6 +10,12 @@
 //
 //  Created by H2026215 on 2026/1/16.
 //
+//
+//  Chapter.swift
+//  CCG
+//
+//  Created by H2026215 on 2026/1/16.
+//
 import SwiftUI
 
 // MARK: - Model
@@ -82,48 +88,6 @@ struct ChapterView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // 顶部：返回按钮 + 搜索框（同一行，保持原布局）
-            HStack {
-                // 返回按钮
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "chevron.left")
-                        .font(.title3)
-                        .foregroundColor(Color(red: 0.34, green: 0.24, blue: 0.51))
-                }
-                
-                Spacer()
-                
-                // 搜索框 - 和 HomeView 完全一样的样式
-                HStack(spacing: 8) {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(.gray)
-                    TextField("Search", text: $searchText)
-                        .font(.system(size: 16))
-                        .autocapitalization(.none)
-                        .disableAutocorrection(true)
-                }
-                .padding(11)
-                .frame(width: 250) 
-                .background(Color.white)
-                .cornerRadius(100)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 100)
-                        .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                )
-                
-                if !searchText.isEmpty {
-                    Button("Cancel") {
-                        searchText = ""
-                    }
-                    .foregroundColor(Color(red: 0.34, green: 0.24, blue: 0.51))
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.top, 8)
-            .background(Color.white)
-
             // 内容
             ScrollView {
                 VStack(spacing: 28) {
@@ -161,7 +125,28 @@ struct ChapterView: View {
             }
         }
         .background(Color.white)
-        .navigationBarHidden(true)
+        
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.gray)
+                    TextField("Search", text: $searchText)
+                        .font(.system(size: 16))
+                        .autocapitalization(.none)
+                        .disableAutocorrection(true)
+                        .frame(width: 180)
+                }
+                .padding(8)
+                .background(Color.white)
+                .cornerRadius(20)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                )
+            }
+        }
     }
 }
 
@@ -179,8 +164,8 @@ struct ChapterView: View {
 // MARK: - Dish → Ingredients mapping
 func dishInfoForDish(_ dish: Dish) -> DishInfo? {
     switch dish.name {
-    case "Beijing Zhajiang Mian":
-        return DishData.zhajiangMian
+    case "Beijing Soy Bean Paste Noodles":
+        return DishData.beijingsoybeanpastenoodles
     case "Peking Duck":
         return DishData.pekingDuck
     case "Shredded Pork with Scallions":

@@ -156,8 +156,8 @@ class ProgressViewModel: ObservableObject {
         allDishes += ChapterData.beijing.map { $0.name }
         allDishes += ChapterData.sichuan.map { $0.name }
         allDishes += ChapterData.jiangsu.map { $0.name }
-        allDishes += ChapterData.minnan.map { $0.name }
-        allDishes += ChapterData.guangdong.map { $0.name }
+        allDishes += ChapterData.fujian.map { $0.name }
+        allDishes += ChapterData.cantonese.map { $0.name }
         allDishes += ChapterData.anhui.map { $0.name }
         return allDishes
     }

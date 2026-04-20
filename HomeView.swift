@@ -25,9 +25,18 @@ struct HomeView: View {
         ("Beijing", "beijing", ChapterData.beijing),
         ("Sichuan", "sichuan", ChapterData.sichuan),
         ("Jiangsu", "jiangsu", ChapterData.jiangsu),
-        ("Minnan", "minnan", ChapterData.minnan),
-        ("Guangdong", "guangdong", ChapterData.guangdong),
-        ("Anhui", "anhui", ChapterData.anhui)
+        ("Fujian", "fujian", ChapterData.fujian),
+        ("Cantonese", "cantonese", ChapterData.cantonese),
+        ("Anhui", "anhui", ChapterData.anhui),
+        ("Shandong","shandong",ChapterData.shandong),
+        ("Zhejiang","zhejiang",ChapterData.zhejiang),
+        ("Hunan","hunan",ChapterData.hunan),
+        ("Shanghai","shanghai",ChapterData.shanghai),
+        ("Northeast","northeast",ChapterData.northeast),
+        ("Northwest","northwest",ChapterData.northwest),
+        ("Jiangxi","jiangxi",ChapterData.jiangxi),
+        ("Guizhou","guizhou",ChapterData.guizhou),
+        ("Yunnan","yunnan",ChapterData.yunnan)
     ]
     
     // 搜索过滤后的地区
