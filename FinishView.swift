@@ -4,15 +4,10 @@
 //
 //  Created by H2026215 on 2026/1/30.
 //
-//
-//  RecipeCompleteView.swift
-//  CCG
-//
-//  Created by H2026215 on 2026/1/30.
-//
+
 import SwiftUI
 import PhotosUI
-
+import GoogleGenerativeAI
 
 struct FinishView: View {
     let onSkip: () -> Void
@@ -20,30 +15,50 @@ struct FinishView: View {
     @EnvironmentObject var progressVM: ProgressViewModel
     @EnvironmentObject var photoVM: PhotoViewModel
     
+    private let model = GenerativeModel(name: "gemini-2.5-flash", apiKey: APIKey.default)
+    
     @State private var showCamera = false
     @State private var showPhotoPicker = false
     @State private var selectedImage: UIImage?
     @State private var showingPhotoOptions = false
     @State private var isUploading = false
     @State private var uploadSuccess = false
+    @State private var isVerifying = false
+    @State private var verificationMessage: String?
+    @State private var verificationSuccess = false
+    @State private var hasCompleted = false  // 防止重复计数
     
     var body: some View {
         ZStack {
             Color.white.ignoresSafeArea()
             
-            VStack(spacing: 40) {
-                Spacer()
+            VStack(spacing: 30) {
                 
-                Text("Congratulations！\n\nYou’ve finished the\n dish of this level!")
-                    .font(.system(size: 36, weight: .bold))
-                    .foregroundColor(Color(red: 0.34, green: 0.24, blue: 0.51))
-                    .multilineTextAlignment(.center)
+                // 没有选照片时：显示 Congratulations 和 🎉
+                if selectedImage == nil {
+                    VStack(spacing: 20) {
+                        Text("Congratulations！\nYou’ve finished the\ndish of this level!")
+                            .font(.system(size: 32, weight: .bold))
+                            .foregroundColor(Color(red: 0.34, green: 0.24, blue: 0.51))
+                            .multilineTextAlignment(.center)
+                        
+                        Text("🎉")
+                            .font(.system(size: 80))
+                            .foregroundColor(Color(red: 0.34, green: 0.24, blue: 0.51))
+                    }
+                    .padding(.bottom, 20)
+                }
                 
-                Text("🎉")
-                    .font(.system(size: 100))
-                    .foregroundColor(Color(red: 0.34, green: 0.24, blue: 0.51))
-                
-                Spacer()
+                // 已选图片预览
+                if let selectedImage {
+                    Image(uiImage: selectedImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 200)
+                        .cornerRadius(16)
+                        .padding(.horizontal)
+                        .shadow(radius: 4)
+                }
                 
                 // 拍照按钮
                 Button(action: {
@@ -51,54 +66,74 @@ struct FinishView: View {
                 }) {
                     HStack {
                         Image(systemName: "camera.fill")
-                        Text("Share Your Dish")
+                        Text(selectedImage == nil ? "Take Photo" : "Change Photo")
                     }
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.system(size: 18, weight: .semibold))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 60)
+                    .frame(height: 52)
                     .background(Color(red: 0.34, green: 0.24, blue: 0.51))
-                    .cornerRadius(8)
+                    .cornerRadius(12)
                     .padding(.horizontal, 40)
                 }
-                .disabled(isUploading)
+                .disabled(isUploading || isVerifying)
                 
-                // 上传中状态
-                if isUploading {
-                    HStack {
-                        ProgressView()
-                            .tint(Color(red: 0.34, green: 0.24, blue: 0.51))
-                        Text("Uploading...")
-                            .foregroundColor(.gray)
+                // AI 验证并完成按钮
+                if selectedImage != nil {
+                    Button(action: {
+                        Task {
+                            await verifyAndComplete()
+                        }
+                    }) {
+                        HStack {
+                            if isVerifying {
+                                ProgressView()
+                                    .tint(.white)
+                            } else {
+                                Image(systemName: "checkmark.seal.fill")
+                                Text("Verify & Complete")
+                            }
+                        }
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 52)
+                        .background(Color.green)
+                        .cornerRadius(12)
+                        .padding(.horizontal, 40)
                     }
+                    .disabled(isUploading || isVerifying)
                 }
                 
-                // 上传成功提示
-                if uploadSuccess {
-                    Text("Photo uploaded! ✅")
-                        .foregroundColor(.green)
+                // 验证状态消息
+                if let message = verificationMessage {
+                    Text(message)
                         .font(.caption)
+                        .foregroundColor(verificationSuccess ? .green : .red)
+                        .multilineTextAlignment(.center)
                 }
                 
+                // Skip 按钮
                 Button(action: {
                     onSkip()
                 }) {
                     Text("Skip")
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundColor(.white)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(Color(red: 0.34, green: 0.24, blue: 0.51).opacity(0.8))
                         .frame(maxWidth: .infinity)
                         .frame(height: 44)
-                        .background(Color(red: 0.34, green: 0.24, blue: 0.51).opacity(0.8))
-                        .cornerRadius(8)
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(12)
                         .padding(.horizontal, 40)
                 }
                 
-                Spacer().frame(height: 50)
+                Spacer().frame(height: 30)
             }
         }
-        .onAppear {
-            progressVM.incrementCompletion(for: dishName)
-        }
+        // ❌ 删除这个 onAppear，不再自动计数
+        // .onAppear {
+        //     progressVM.incrementCompletion(for: dishName)
+        // }
         .confirmationDialog("Share your creation", isPresented: $showingPhotoOptions, titleVisibility: .visible) {
             Button("Take Photo") {
                 showCamera = true
@@ -114,21 +149,72 @@ struct FinishView: View {
         .sheet(isPresented: $showPhotoPicker) {
             ImagePicker(sourceType: .photoLibrary, selectedImage: $selectedImage)
         }
-        .onChange(of: selectedImage) { newImage in
-            if let image = newImage {
-                isUploading = true
-                photoVM.uploadPhoto(image: image, dishName: dishName)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                    isUploading = false
-                    uploadSuccess = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        uploadSuccess = false
+    }
+    
+    // MARK: - AI Verification
+    @MainActor
+    func verifyAndComplete() async {
+        guard let image = selectedImage else { return }
+        
+        isVerifying = true
+        verificationMessage = nil
+        
+        let prompt = """
+        You are a judge for a cooking game. The user claims they made: "\(dishName)".
+        Look at the photo and decide if it shows this dish.
+        
+        Respond with ONLY a JSON object in this exact format:
+        {"match": true/false, "reason": "short explanation"}
+        
+        Be strict: only return true if the photo clearly matches the dish name.
+        """
+        
+        do {
+            let response = try await model.generateContent(prompt, image)
+            
+            if let text = response.text,
+               let jsonData = text.data(using: .utf8),
+               let result = try? JSONDecoder().decode(VerificationResult.self, from: jsonData) {
+                
+                if result.match {
+                    verificationSuccess = true
+                    verificationMessage = "✅ Verified! \(result.reason)"
+                    
+                    // ✅ 只在验证通过时才计数
+                    if !hasCompleted {
+                        hasCompleted = true
+                        progressVM.incrementCompletion(for: dishName)
                     }
-                    selectedImage = nil
+                    
+                    // 上传照片
+                    isUploading = true
+                    photoVM.uploadPhoto(image: image, dishName: dishName)
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        isUploading = false
+                        onSkip()
+                    }
+                } else {
+                    verificationSuccess = false
+                    verificationMessage = "❌ Not verified: \(result.reason)"
+                    isVerifying = false
                 }
+            } else {
+                verificationMessage = "AI analysis failed. Please try again."
+                isVerifying = false
             }
+        } catch {
+            print("Gemini error: \(error)")
+            verificationMessage = "Verification error: \(error.localizedDescription)"
+            isVerifying = false
         }
     }
+}
+
+// JSON 解析结构
+struct VerificationResult: Codable {
+    let match: Bool
+    let reason: String
 }
 
 // MARK: - Image Picker
