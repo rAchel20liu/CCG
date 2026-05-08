@@ -111,11 +111,16 @@ struct RecipeFlowView: View {
 
 #Preview {
     NavigationStack {
+        // 创建一个临时的 DishInfo 用于预览
+        let sampleDish = DishInfo(
+            dishname: "Sample Dish",
+            description: "Sample description",
+            ingredients: [],
+            recipesteps: []
+        )
         RecipeFlowView(
-            dish: DishData.beijingsoybeanpastenoodles,
-            onFinish: {
-                print("Finished, returning to ChapterView")
-            }
+            dish: sampleDish,
+            onFinish: { print("Finished") }
         )
         .environmentObject(ProgressViewModel())
     }

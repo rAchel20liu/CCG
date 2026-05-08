@@ -113,7 +113,13 @@ struct DishDetailView: View {
 
 #Preview {
     NavigationStack {
-        DishDetailView(dish: DishData.beijingsoybeanpastenoodles)
+        let sampleDish = DishInfo(
+            dishname: "Sample Dish",
+            description: "Sample description",
+            ingredients: [],
+            recipesteps: []
+        )
+        DishDetailView(dish: sampleDish)
             .environmentObject(ProgressViewModel())
     }
 }

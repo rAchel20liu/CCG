@@ -5,13 +5,19 @@
 //  Created by H2026215 on 2026/4/13.
 //
 
+//
+//  region data.swift
+//  CCG
+//
+//  Created by H2026215 on 2026/4/13.
+//
 
 import SwiftUI
 
 struct RegionCard: View {
     let title: String
     let imageName: String
-    let dishes: [Dish]
+    // 删除了 dishes 参数
     
     var body: some View {
         HStack {
@@ -39,9 +45,5 @@ struct RegionCard: View {
 }
 
 #Preview {
-    RegionCard(
-        title: "Beijing",
-        imageName: "beijing",
-        dishes: ChapterData.beijing
-    )
+    RegionCard(title: "Beijing", imageName: "beijing")
 }
