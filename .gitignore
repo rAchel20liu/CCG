@@ -1,0 +1,6 @@
+GenerativeAI-Info.plist
+GoogleService-Info.plist
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+.DS_Store
